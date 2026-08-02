@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCN-kód ellenőrzés</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+}
+
+.box,
+#titkosOldal{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+    padding:25px;
+}
+
+#titkosOldal{
+    display:none;
+    text-align:left;
+    line-height:1.6;
+}
+
+.pin{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin:30px 0;
+}
+
+.dot{
+    width:18px;
+    height:18px;
+    border:2px solid white;
+    border-radius:50%;
+}
+
+.filled{
+    background:white;
+}
+
+.keys{
+    display:grid;
+    grid-template-columns:repeat(3,75px);
+    gap:15px;
+    justify-content:center;
+}
+
+.keys button{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    border:none;
+    background:#2c2c2c;
+    color:white;
+    font-size:28px;
+    cursor:pointer;
+}
+
+.keys button:hover{
+    background:#444;
+}
+
+#msg{
+    margin-top:20px;
+    min-height:60px;
+    font-size:20px;
+}
+
+#secretButton{
+    position:fixed;
+    left:50%;
+    bottom:6px;
+    transform:translateX(-50%);
+    width:12px;
+    height:12px;
+    border:none;
+    border-radius:50%;
+    background:white;
+    opacity:.05;
+    cursor:pointer;
+    transition:.2s;
+}
+
+#secretButton:hover{
+    opacity:.25;
+}
+</style>
+</head>
+<body>
+
+<div class="box" id="main">
+
+<h2>CCN-kód megadása</h2>
+
+<p>
+Adja meg a 4 számjegyű CCN-kódot.<br>
+Legfeljebb <b>3 próbálkozás</b> áll rendelkezésre.
+</p>
+
+<div class="pin">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+
+<div class="keys">
+<button onclick="add(1)">1</button>
+<button onclick="add(2)">2</button>
+<button onclick="add(3)">3</button>
+
+<button onclick="add(4)">4</button>
+<button onclick="add(5)">5</button>
+<button onclick="add(6)">6</button>
+
+<button onclick="add(7)">7</button>
+<button onclick="add(8)">8</button>
+<button onclick="add(9)">9</button>
+
+<button onclick="del()">⌫</button>
+<button onclick="add(0)">0</button>
+<button onclick="ok()">✓</button>
+</div>
+
+<div id="msg"></div>
+
+</div>
+
+<div id="titkosOldal">
+
+<h2>Titkos megjegyzés</h2>
+
+<p>
+Ez a rész egy titkos dolog. Senkinek se mondd el!
+</p>
+
+<p>
+A valós kódot a lakásban találod. Amit be akarsz írni, az nem az igazi.
+</p>
+
+</div>
+
+<button id="secretButton" onclick="toggleSecret()"></button>
+
+<script>
+
+const helyesPIN="1014";
+
+let pin="";
+let proba=3;
+
+function frissit(){
+    const pontok=document.querySelectorAll(".dot");
+
+    pontok.forEach((p,i)=>{
+        if(i<pin.length){
+            p.classList.add("filled");
+        }else{
+            p.classList.remove("filled");
+        }
+    });
+}
+
+function add(n){
+    if(proba<=0)return;
+
+    if(pin.length<4){
+        pin+=n;
+        frissit();
+    }
+}
+
+function del(){
+    pin=pin.slice(0,-1);
+    frissit();
+}
+
+function ok(){
+
+    if(proba<=0)return;
+
+    if(pin.length!==4)return;
+
+    if(pin===helyesPIN){
+
+        document.getElementById("msg").innerHTML=
+        "🏅<br><br><b>Gratulálunk!</b><br>Megkaptad az érdemrendet!";
+
+    }else{
+
+        proba--;
+
+        if(proba===0){
+
+            document.getElementById("msg").innerHTML=
+            "🔒<br>A készülék lezárva";
+
+        }else{
+
+            document.getElementById("msg").innerHTML=
+            "❌ Hibás CCN.<br>Hátralévő próbálkozások: "+proba;
+
+        }
+
+    }
+
+    pin="";
+    frissit();
+
+}
+
+function toggleSecret(){
+
+    const main=document.getElementById("main");
+    const secret=document.getElementById("titkosOldal");
+
+    if(secret.style.display==="block"){
+
+        secret.style.display="none";
+        main.style.display="block";
+
+    }else{
+
+        main.style.display="none";
+        secret.style.display="block";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
